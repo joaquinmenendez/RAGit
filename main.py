@@ -1,8 +1,10 @@
+import os
+
 from video_to_subtitle import get_transcription_youtube, add_time_window_to_video
 from vector_db import transcription_to_db, load_db
 from llm import answer_question_vertex
 from embeddings import calculate_tokens
-import os
+from check_grounding import check_grounding, fact_formatter, add_citations
 
 url = "https://www.youtube.com/watch?v=NgbEL2HbXWw"
 
@@ -28,7 +30,7 @@ answer_url = add_time_window_to_video(url, metadata=response[0].metadata)
 answer = answer_question_vertex(question=query, context=answer_context)
 print(f'Respuesta: {answer}\nLink:{answer_url}')
 
-
-
-
-
+# Test check grounding
+facts = fact_formatter([i.page_content for i in response])
+grounded = check_grounding(answer_candidate=answer, facts=facts)
+answer_with_citations = add_citations(answer_candidate=answer, grounded_response=grounded)
