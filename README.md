@@ -15,6 +15,8 @@ A framework to create a RAG assistant for videos.
 - [ ] Wrap up all together
 
 ### Extra mile
+- [ ] Optimize StT by adding punctuation (LLM calling)
+- [ ] Dynamically select the prompt by using the language in the video (worth it?  what if query is in a != language?)
 - [ ] Enable RAG fusion
 - [ ] Implement SemanticRetrieve to create chunks (default is len words)
 
