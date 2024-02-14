@@ -10,15 +10,16 @@ A framework to create a RAG assistant for videos.
 - [x] Function to perform embedding (multilingual gecko)
 - [x] Lift Vector DB (vector search? or Chroma?)
 - [x] RAG prompt (query answer)
-- [ ] Generate citations to document/chunk (Check grounding? Citation?)
-- [ ] Get starting time for a chunk
+- [x] Generate citations to document/chunk (Check grounding? Citation?)
+- [x] Get starting time for a chunk
 - [ ] Wrap up all together
 
 ### Extra mile
+- [ ] Implement SemanticRetrieve to create chunks (default is len words)
 - [ ] Optimize StT by adding punctuation (LLM calling)
 - [ ] Dynamically select the prompt by using the language in the video (worth it?  what if query is in a != language?)
 - [ ] Enable RAG fusion
-- [ ] Implement SemanticRetrieve to create chunks (default is len words)
+
 
 ## Videos
 1 - [El ORIGEN de los distintos ACENTOS de Argentina](https://www.youtube.com/watch?v=NgbEL2HbXWw), id: NgbEL2HbXWw
