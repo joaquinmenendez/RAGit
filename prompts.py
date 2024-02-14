@@ -1,19 +1,20 @@
 from langchain.prompts import PromptTemplate
 
-_question_prompt_template = """ 
+question_prompt_template = """ 
 Eres una inteligencia artificial diseñada para responder preguntas sobre el contenido que aparece en un video.
- Esta es una transcripciÓn del video:
+ Esta es una transcripción del video:
 ---
 TRANSCRIPCIÓN: {context}
 --- 
 
-Utilizando el contenido de la transcripcion mencionada arriba, responde a la pregunta. 
+Utilizando el contenido de la transcripción mencionada arriba, responde la siguiente pregunta:
 
 PREGUNTA: {question}
 
 REPSUESTA:
 """
+
 question_prompt = PromptTemplate(
-    template=_question_prompt_template,
+    template=question_prompt_template,
     input_variables=['question', 'context']
 )
