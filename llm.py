@@ -3,7 +3,7 @@ import os
 import google.generativeai as genai
 
 from vertexai.preview.generative_models import GenerativeModel
-from prompts import question_prompt
+from prompts import question_prompt, fill_punctuation_prompt
 
 VERTEX_SAFETY_SETTINGS = {
     genai.types.HarmCategory.HARM_CATEGORY_SEXUAL: genai.types.HarmBlockThreshold.BLOCK_NONE,
@@ -11,6 +11,19 @@ VERTEX_SAFETY_SETTINGS = {
     genai.types.HarmCategory.HARM_CATEGORY_TOXICITY: genai.types.HarmBlockThreshold.BLOCK_NONE,
     genai.types.HarmCategory.HARM_CATEGORY_DEROGATORY: genai.types.HarmBlockThreshold.BLOCK_NONE
 }
+
+
+def add_punctuation(raw_transcription: str) -> str:
+    vertexai.init(project=os.environ['PROJECT_ID'],
+                  location=os.environ['LOCATION'])
+
+    model = GenerativeModel(os.environ["GENERATIVE_MODEL"])
+    prompt = fill_punctuation_prompt.format_prompt(
+        raw_transcription=raw_transcription).text
+    response = model.generate_content(
+        contents=prompt, safety_settings=VERTEX_SAFETY_SETTINGS
+    )
+    return response.text
 
 
 def answer_question_vertex(question: str, context: str) -> str:
