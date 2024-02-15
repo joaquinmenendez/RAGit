@@ -9,7 +9,7 @@ def transcription_to_db(transcriptions: list, persist_directory="./chroma_db",
     embedding_function = embedding_function if embedding_function else VertexAIEmbeddings(
         os.environ['EMBEDDING_MODEL'])
     texts = [text["text"] for text in transcriptions]
-    metadatas = [{'start': text['start'], 'duration': text['duration']} for text
+    metadatas = [{'start': text.get('start'), 'duration': text.get('duration'), 'url': text.get('url')} for text
                  in transcriptions]
     db = Chroma.from_texts(texts,
                            embedding_function,
