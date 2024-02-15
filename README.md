@@ -15,7 +15,7 @@ A framework to create a RAG assistant for videos.
 - [ ] Wrap up all together
 
 ### Extra mile
-- [ ] Implement SemanticRetrieve to create chunks (default is len words)
+- [ ] Implement [Semantic Chunking](https://python.langchain.com/docs/modules/data_connection/document_transformers/semantic-chunker) to create chunks (default is len words)
 - [ ] Optimize StT by adding punctuation (LLM calling)
 - [ ] Dynamically select the prompt by using the language in the video (worth it?  what if query is in a != language?)
 - [ ] Enable RAG fusion
