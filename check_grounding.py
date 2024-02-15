@@ -1,5 +1,8 @@
 import requests
 import os
+from typing import Tuple
+from langchain_core.documents.base import Document
+from video_to_subtitle import add_time_window_to_video
 
 
 def check_grounding(answer_candidate: str, facts: list[dict]) -> dict:
@@ -17,8 +20,9 @@ def check_grounding(answer_candidate: str, facts: list[dict]) -> dict:
     Returns:
         dict: The JSON response from the API if successful.
     """
-    endpoint = f"https://discoveryengine.googleapis.com/v1alpha/projects/{ os.environ['PROJECT_ID']}/locations/global/groundingConfigs/default_grounding_config:checkGrounding"
-    access_token = os.environ.get('GCLOUD_ACCESS_TOKEN', os.popen("gcloud auth print-access-token").read().strip())
+    endpoint = f"https://discoveryengine.googleapis.com/v1alpha/projects/{os.environ['PROJECT_ID']}/locations/global/groundingConfigs/default_grounding_config:checkGrounding"
+    access_token = os.environ.get('GCLOUD_ACCESS_TOKEN', os.popen(
+        "gcloud auth print-access-token").read().strip())
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
@@ -38,7 +42,8 @@ def fact_formatter(facts: list[str]) -> list[dict]:
     return [{'factText': fact} for fact in facts]
 
 
-def add_citations(answer_candidate: str, grounded_response: dict) -> str:
+def add_citations(answer_candidate: str, grounded_response: dict) -> Tuple[
+    str, list[str]]:
     """
     Adds citation quotes to an answer candidate based on the Discovery Engine API response.
 
@@ -48,16 +53,42 @@ def add_citations(answer_candidate: str, grounded_response: dict) -> str:
 
     Returns:
       str: The answer candidate with citation markers appended.
+      list
     """
 
-    citations = grounded_response['answerCandidateCitation'].get("citations", [])
+    citations = grounded_response['answerCandidateCitation'].get("citations",[])
+    offset = 0
     for citation in citations:
-        start_pos = int(citation["startPos"])  # Convert to integers for manipulation
-        end_pos = int(citation["endPos"])
-        citation_marker = f" {citation['citationIndices'] }"
-        # Insert citation marker at the end of the cited text
-        answer_candidate = answer_candidate[:end_pos] + citation_marker + answer_candidate[end_pos:]
-        # Adjust offsets for subsequent citations, as markers change the string length
-        end_pos += len(citation_marker)
+        if citation.get('citationIndices'):
+            end_pos = int(citation["endPos"]) + offset
+            citation_marker = f"{citation['citationIndices']}"
+            # Insert citation marker at the end of the cited text
+            answer_candidate = answer_candidate[
+                               :end_pos] + citation_marker + answer_candidate[
+                                                             end_pos:]
+            # Adjust offsets for subsequent citations, as markers change the string length
+            offset = len(citation_marker)
+    # get citations index
+    references = _get_references(citations)
+    return answer_candidate, references
 
-    return answer_candidate
+
+def _get_references(citations: list[dict]):
+    references = []
+    for cite in citations:
+        if cite.get('citationIndices') and isinstance(cite['citationIndices'], list):
+            for ref in cite['citationIndices']:
+                references.append(ref)
+    return references
+
+
+def links_to_references(response: list[Document], references: list[str]) -> dict:
+    ref_link = {}
+    if len(references) == 0:
+        return {}
+    for ref in references:
+        ref_link.update({
+            ref: add_time_window_to_video(response[ref].metadata['url'],
+                                          response[ref].metadata)
+        })
+    return ref_link
