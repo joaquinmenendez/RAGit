@@ -7,7 +7,8 @@ Eres una inteligencia artificial diseñada para responder preguntas sobre el con
 TRANSCRIPCIÓN: {context}
 --- 
 
-Utilizando el contenido de la transcripción mencionada arriba, responde la siguiente pregunta:
+Utilizando el contenido de la transcripción mencionada arriba, responde la siguiente pregunta.
+Si la pregunta es compleja respondela por partes:
 
 PREGUNTA: {question}
 
