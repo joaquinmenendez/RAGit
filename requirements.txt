@@ -6,4 +6,4 @@ youtube-transcript-api==0.6.2
 google-cloud-aiplatform==1.41.0
 google-ai-generativelanguage==0.4.0
 chromadb==0.4.22
-google-cloud-discoveryengine
+google-cloud-discoveryengine==0.11.7
