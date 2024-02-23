@@ -9,11 +9,12 @@ from embeddings import calculate_tokens
 from check_grounding import check_grounding, fact_formatter, add_citations, \
     links_to_references
 
+# Set initial configuration for a single video
+url = "https://www.youtube.com/watch?v=NgbEL2HbXWw"
 
 # Chose a method --------------------------------------------------------------
 #     --- Get transcripts directly from YouTube ---
 
-url = "https://www.youtube.com/watch?v=NgbEL2HbXWw"
 raw_transcript, chunked_transcript = get_transcription_youtube(url)
 [c.update({'url': url}) for c in chunked_transcript]
 
@@ -30,6 +31,7 @@ chunked_transcript = concatenate_stt_captions(
     stt_df.to_dict('records'), num_words=130
 )
 [c.update({'url': url}) for c in chunked_transcript]
+corrected_transcription = ''.join([c['text']for c in chunked_transcript])
 
 
 
@@ -40,13 +42,13 @@ else:
     db = transcription_to_db(transcriptions=chunked_transcript)
 
 # Define question --------------------------------------------------------------
-query = 'Cómo se llama el libro de los acentos y quien lo escribió?'
+query = 'Cómo se llama el libro de los acentos y quién lo escribió?'
 
 # LLM answering + check grounding ---------------------------------------------
 
-response = db.similarity_search(query, k=4)  # TODO: Langchain retrievers
+response = db.similarity_search(query, k=3)  # TODO: Langchain retrievers
 
-if calculate_tokens(raw_transcript) < 30000:
+if calculate_tokens(corrected_transcription) < 30000:
     answer = answer_question_vertex(
         question=query,
         context=corrected_transcription
